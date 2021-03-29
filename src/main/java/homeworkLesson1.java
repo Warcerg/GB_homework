@@ -5,7 +5,7 @@ public class homeworkLesson1 {
         task2();
         printTask(3);
         System.out.println(task3(3.14f, 6.25f, 25f, 5f));
-        System.out.println(task3( 2.17f, 4.43f, 68f, 14.5f));
+        System.out.println(task3(2.17f, 4.43f, 68f, 14.5f));
         printTask(4);
         System.out.println(task4(7, 13));
         System.out.println(task4(2, 5));
@@ -30,7 +30,7 @@ public class homeworkLesson1 {
         System.out.println("Задание " + a + ":");
     }
 
-    public static void task2(){
+    public static void task2() {
         byte a = 127;
         short b = 32425;
         int c = 7;
@@ -51,29 +51,29 @@ public class homeworkLesson1 {
         System.out.println(h);
     }
 
-    public static float task3(float a, float b, float c, float d){
+    public static float task3(float a, float b, float c, float d) {
         return (a * (b + c / d));
     }
 
-    public static boolean task4( int a, int b){
+    public static boolean task4(int a, int b) {
         return a + b >= 10 & a + b <= 20;
     }
 
-    public static void task5(int a){
-        if ( a >= 0){
+    public static void task5(int a) {
+        if (a >= 0) {
             System.out.println("Число " + a + " положительное");
         } else System.out.println("Число " + a + " отрицательное");
     }
 
-    public static boolean task6(int a){
+    public static boolean task6(int a) {
         return !(a >= 0);
     }
 
-    public static void task7(String name){
+    public static void task7(String name) {
         System.out.println("Привет, " + name + "!");
     }
 
-    public static void task8(int a){
+    public static void task8(int a) {
         if ((a % 4 == 0) & ((a % 400 == 0) || !(a % 100 == 0))) {
             System.out.println("Год " + a + " високосный");
         } else System.out.println("Год " + a + " не является високосным");
