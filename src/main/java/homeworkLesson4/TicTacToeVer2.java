@@ -3,9 +3,10 @@ package homeworkLesson4;
 import java.util.Random;
 import java.util.Scanner;
 
-public class TicTacToe {
+public class TicTacToeVer2 {
 
-    static final char HEADER_FIRST_SYMBOL = '◆';
+    static char[][] MAP;
+    static final char HEADER_FIRST_SYMBOL = '#';
     static final String EMPTY = " ";
 
     static final char DOT_EMPTY = '*';
@@ -15,47 +16,30 @@ public class TicTacToe {
     static int size;
     static int winCondition;
 
-    static char[][] MAP;
-    static final Scanner in = new Scanner(System.in);
-    static final Random random = new Random();
 
     static int turnsCount = 0;
-    static int lastTurn; //  а нужен ли?
     static int lastPlayedRow;
     static int lastPlayedColumn;
 
+    static final Scanner in = new Scanner(System.in);
+    static final Random random = new Random();
 
     public static void main(String[] args) {
 
-        setTheGame();
+        setGame();
 
-        turnGame();
-
+        playGameRound();
     }
 
-    private static void turnGame() {
-        do{
-            initMap();
-
-            printMap();
-
-            playGame();
-
-
-        } while(newGameCheck());
-
-        endGame();
-    }
-
-    private static void setTheGame() {
+    private static void setGame() {
 
         boolean isInputValid = true;
 
         System.out.println("Let's play a TicTacToe! " +
                 "\nRecommended game field size > 2 ");
-        do{
+        do {
             System.out.println("Please choose a size of a game field: ");
-            if(in.hasNextInt()){
+            if (in.hasNextInt()) {
                 size = in.nextInt();
             } else {
                 processingIncorrectInputGameSetting();
@@ -64,7 +48,7 @@ public class TicTacToe {
             }
 
             System.out.println("Please choose a win condition. \nSet how many marks (X or 0) are needed are needed for the win?: ");
-            if(in.hasNextInt()){
+            if (in.hasNextInt()) {
                 winCondition = in.nextInt();
             } else {
                 processingIncorrectInputGameSetting();
@@ -92,6 +76,20 @@ public class TicTacToe {
         in.nextLine();
     }
 
+    private static void playGameRound() {
+        do {
+            initMap();
+
+            printMap();
+
+            playGame();
+
+
+        } while (newGameCheck());
+
+        endGame();
+    }
+
     private static void initMap() {
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
@@ -101,12 +99,12 @@ public class TicTacToe {
     }
 
     private static void printMap() {
-        printHeaderMap();
+        printHeaderM();
 
-        printBodyMap();
+        printBodyM();
     }
 
-    private static void printHeaderMap() {
+    private static void printHeaderM() {
         printByMapSize(HEADER_FIRST_SYMBOL);
         for (int i = 0; i < size; i++) {
             printMapNumber(i);
@@ -134,7 +132,7 @@ public class TicTacToe {
         }
     }
 
-    private static void printBodyMap() {
+    private static void printBodyM() {
         for (int i = 0; i < size; i++) {
             printMapNumber(i);
             for (int j = 0; j < size; j++) {
@@ -142,6 +140,7 @@ public class TicTacToe {
             }
             System.out.println();
         }
+
     }
 
     private static void playGame() {
@@ -162,21 +161,20 @@ public class TicTacToe {
     }
 
     private static void humanTurn() {
-        int rowNumber;
-        int columnNumber;
+        int rowNumber = 0;
+        int columnNumber = 0;
         boolean isInputValid;
 
         System.out.println("\n Human turn. Please enter the row and column number.");
         do {
-            rowNumber = -1;
-            columnNumber = -1;
             isInputValid = true;
 
             System.out.print("Row: ");
             if (in.hasNextInt()) {
                 rowNumber = in.nextInt() - 1;
             } else {
-                processingIncorrectInput();
+                System.out.println("Error!  PLease enter the number within field range");
+                in.nextLine();
                 isInputValid = false;
                 continue;
             }
@@ -185,11 +183,12 @@ public class TicTacToe {
             if (in.hasNextInt()) {
                 columnNumber = in.nextInt() - 1;
             } else {
-                processingIncorrectInput();
+                System.out.println("Error!  PLease enter the number within field range");
+                in.nextLine();
                 isInputValid = false;
             }
 
-        } while (!(isInputValid && isHumanTurnValid(rowNumber, columnNumber)));
+        } while (!(isInputValid && checkInputValidity(rowNumber, columnNumber)));
 
         MAP[rowNumber][columnNumber] = DOT_HUMAN;
         turnsCount++;
@@ -197,48 +196,42 @@ public class TicTacToe {
 
     }
 
-    private static void rememberLastPlayedPosition(int rowNumber, int columnNumber) {
-        lastPlayedRow = rowNumber;
-        lastPlayedColumn = columnNumber;
-    }
-
-    private static boolean isHumanTurnValid(int rowNumber, int columnNumber) {
-        if (!isNumbersValid(rowNumber, columnNumber)) {
+    private static boolean checkInputValidity(int rowNumber, int columnNumber) {
+        if (!inputValuesValid(rowNumber, columnNumber)) {
             System.out.println("\n Check row and column values");
             return false;
-        } else if (!isCellFree(rowNumber,columnNumber)){
+        } else if (!isCellFree(rowNumber, columnNumber)) {
             System.out.println("\n You chose occupied cell");
             return false;
         }
         return true;
     }
 
+    private static boolean inputValuesValid(int rowNumber, int columnNumber) {
+        return rowNumber >= 0 && rowNumber < size && columnNumber >= 0 && columnNumber < size;
+    }
+
     private static boolean isCellFree(int rowNumber, int columnNumber) {
         return MAP[rowNumber][columnNumber] == DOT_EMPTY;
     }
 
-    private static boolean isNumbersValid(int rowNumber, int columnNumber) {
-        return rowNumber < size && rowNumber >= 0 && columnNumber < size && columnNumber >= 0;
-    }
-
-    private static void processingIncorrectInput() {
-        System.out.println("Error!  PLease enter the number within field range");
-        in.nextLine();
+    private static void rememberLastPlayedPosition(int rowNumber, int columnNumber) {
+        lastPlayedRow = rowNumber;
+        lastPlayedColumn = columnNumber;
     }
 
     private static boolean checkEnd(char symbol, int lastPlayedRow, int lastPlayedColumn) {
-        if (checkWin(symbol, lastPlayedRow, lastPlayedColumn)){
-            if (symbol == DOT_HUMAN){
+        if (checkWin(symbol, lastPlayedRow, lastPlayedColumn)) {
+            if (symbol == DOT_HUMAN) {
                 System.out.println("Hooray! You won!");
             } else {
                 System.out.println("You lost....AI have prevailed!");
             }
             return true;
-        } else if (isMapFull()){
+        } else if (isMapFull()) {
             System.out.println("Draw!");
             return true;
         }
-
         return false;
     }
 
@@ -252,25 +245,33 @@ public class TicTacToe {
 
     private static boolean checkWinVertical(char symbol, int lastPlayedColumn) {
         int symbolCount = 0;
-        for (int i = 0; i < size; i++) {
+        for (int i = findStartPosition(lastPlayedRow); i < size && i < lastPlayedRow + winCondition; i++) {
             if (MAP[i][lastPlayedColumn] == symbol) {
                 symbolCount++;
                 if (symbolCount == winCondition) {
                     return true;
                 }
+            } else {
+                symbolCount = 0;
             }
         }
         return false;
     }
 
+    private static int findStartPosition(int lastPosition) {
+        return Math.max(lastPosition - winCondition, 0);
+    }
+
     private static boolean checkWinHorizontal(char symbol, int lastPlayedRow) {
         int symbolCount = 0;
-        for (int i = 0; i < size; i++) {
-            if (MAP[lastPlayedRow][i] == symbol){
+        for (int i = findStartPosition(lastPlayedColumn); i < size && i < lastPlayedColumn + winCondition; i++) {
+            if (MAP[lastPlayedRow][i] == symbol) {
                 symbolCount++;
-                if (symbolCount == winCondition){
+                if (symbolCount == winCondition) {
                     return true;
                 }
+            } else {
+                symbolCount = 0;
             }
         }
         return false;
@@ -280,7 +281,7 @@ public class TicTacToe {
         int symbolCount = 0;
         int x = lastPlayedColumn;
         int y = lastPlayedRow;
-        while ( x>0 && y>0){
+        while (x > findStartPosition(lastPlayedColumn) && y > findStartPosition(lastPlayedRow)) {
             x--;
             y--;
         }
@@ -288,18 +289,49 @@ public class TicTacToe {
     }
 
     private static boolean diagonalSymbolWinCount(char symbol, int symbolCount, int x, int y) {
-        for (int i = x, j = y; i < size && j < size; i++, j++) { //
-            if (MAP[i][j] == symbol){
+        for (int i = x, j = y; i < size && j < size && i < lastPlayedColumn + winCondition && j < lastPlayedRow + winCondition ; i++, j++) { //
+            if (MAP[i][j] == symbol) {
                 symbolCount++;
-                if (symbolCount == winCondition){
+                if (symbolCount == winCondition) {
                     return true;
                 }
+            } else {
+                symbolCount = 0;
             }
         }
         return false;
     }
 
     private static boolean checkWinAntiDiagonal(char symbol, int lastPlayedRow, int lastPlayedColumn) {
+        int symbolCount = 0;
+        int x = lastPlayedColumn;
+        int y = lastPlayedRow;
+        while (x > findStartPosition(lastPlayedColumn) && y < findStartPositionAntiDiag(lastPlayedRow)) {
+            x--;
+            y++;
+        }
+        return antiDiagonalSymbolWinCount(symbol, symbolCount, x, y);
+    }
+
+    private static int findStartPositionAntiDiag(int lastPositionAntiDiag) {
+        return Math.min(lastPositionAntiDiag + winCondition, size - 1);
+    }
+
+    private static boolean antiDiagonalSymbolWinCount(char symbol, int symbolCount, int x, int y) {
+        for (int i = x, j = y; i < size && j >= 0; i++, j--) { //
+            if (MAP[i][j] == symbol) {
+                symbolCount++;
+                if (symbolCount == winCondition) {
+                    return true;
+                }
+            } else {
+                symbolCount = 0;
+            }
+        }
+        return false;
+    }
+
+   /* private static boolean checkWinAntiDiagonal(char symbol, int lastPlayedRow, int lastPlayedColumn) {
         int symbolCount = 0;
         int x = lastPlayedColumn;
         int y = lastPlayedRow;
@@ -320,7 +352,7 @@ public class TicTacToe {
             }
         }
         return false;
-    }
+    }*/
 
     private static boolean isMapFull() {
         return turnsCount == size * size;
@@ -330,8 +362,7 @@ public class TicTacToe {
         int rowNumber;
         int columnNumber;
 
-        System.out.println("\n AI turn.");
-
+        System.out.println("AI turn");
         do {
             rowNumber = random.nextInt(size);
             columnNumber = random.nextInt(size);
@@ -344,25 +375,24 @@ public class TicTacToe {
 
     private static boolean newGameCheck() {
         boolean isUserInputValid = true;
-        boolean newgame = false;
+        boolean newGame = false;
         do {
             System.out.println("\nGame has ended. Want to play another round? \nY/N? : ");
             String userDecision = in.next().toLowerCase();
-            if (userDecision.equals("yes") || userDecision.equals("y")){
-                newgame = true;
-            } else if (userDecision.equals("no") || userDecision.equals("n")){
-                newgame = false;
+            if (userDecision.equals("yes") || userDecision.equals("y")) {
+                newGame = true;
+                turnsCount = 0;
+            } else if (userDecision.equals("no") || userDecision.equals("n")) {
+                newGame = false;
             } else {
-                System.out.println("Response has not been acknowledged. Only 'yes' or 'no' are accepted. Please try again." );
+                System.out.println("Response has not been acknowledged. Only 'yes' or 'no' are accepted. Please try again.");
                 isUserInputValid = false;
             }
         } while (!isUserInputValid);
-        return newgame;
+        return newGame;
     }
 
     private static void endGame() {
         System.exit(0);
     }
-
-
 }
