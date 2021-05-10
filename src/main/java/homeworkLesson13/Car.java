@@ -1,14 +1,11 @@
 package homeworkLesson13;
 
-import homeworkLesson6.Main;
 
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
 
 public class Car implements Runnable {
     private static int CARS_COUNT;
     private static Semaphore smp;
-/*    private static CountDownLatch cdl;*/
     private static boolean syncSwitch = true;
     private Race race;
     private int speed;
